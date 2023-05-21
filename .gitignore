@@ -15,3 +15,4 @@ tests/media/
 *.sqlite3
 *.db
 db/data
+db/media
