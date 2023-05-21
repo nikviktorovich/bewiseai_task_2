@@ -24,6 +24,15 @@ class AbstractUserRepository:
             EntityNotFoundError: If unable to find the specified entity
         """
         raise NotImplementedError()
+    
+
+    def get_by_token(self, access_token: str) -> models.User:
+        """Returns an instance with the specified access token
+        
+        Raises:
+            EntityNotFoundError: If unable to find the specified user by token
+        """
+        raise NotImplementedError()
 
 
     def add(self, instance: models.User) -> models.User:
@@ -55,6 +64,18 @@ class SQLAlchemyUserRepository(AbstractUserRepository):
         if instance is None:
             raise audio_converter.common.errors.EntityNotFoundError(
                 f'Unable to find a user with id={user_id}',
+            )
+        
+        return instance
+    
+
+    def get_by_token(self, access_token: str) -> models.User:
+        instances = self._get_instance_set().filter_by(access_token=access_token)
+        instance = instances.first()
+        
+        if instance is None:
+            raise audio_converter.common.errors.EntityNotFoundError(
+                f'Unable to find a user with access_token={access_token}',
             )
         
         return instance
