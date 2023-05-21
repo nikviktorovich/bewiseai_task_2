@@ -14,6 +14,7 @@ from . import common
 def test_audio_converter():
     test_user = audio_converter.modules.user.domain.models.User(
         id=1,
+        username='someuser',
         access_token='sometokenhere',
     )
     wav_filepath = 'test_wav.wav'
