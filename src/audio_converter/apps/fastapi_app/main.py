@@ -55,6 +55,19 @@ def handle_entity_not_found_error(
     )
 
 
+@app.exception_handler(audio_converter.common.errors.EntityAlreadyExists)
+def handle_entity_already_exists_error(
+    request: fastapi.Request,
+    exception: audio_converter.common.errors.EntityAlreadyExists,
+):
+    return fastapi.responses.JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={
+            'detail': str(exception),
+        },
+    )
+
+
 @app.exception_handler(FileNotFoundError)
 def handle_file_not_found_error(
     request: fastapi.Request,

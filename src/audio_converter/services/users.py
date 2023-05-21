@@ -10,6 +10,13 @@ def create_user(
     username: str,
     uow: unit_of_work.AbstractUserUnitOfWork,
 ) -> models.User:
+    existing_users = uow.users.list(username=username)
+
+    if existing_users:
+        raise audio_converter.common.errors.EntityAlreadyExists(
+            f'User with this username is already exists',
+        )
+
     access_token = audio_converter.services.uuid_generator.generate_uuid()
     user = models.User(
         id=None,

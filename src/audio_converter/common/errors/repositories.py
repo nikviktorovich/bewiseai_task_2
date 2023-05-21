@@ -4,3 +4,7 @@ class RepositoryError(Exception):
 
 class EntityNotFoundError(RepositoryError):
     """Raised when unable to find an entity"""
+
+
+class EntityAlreadyExists(RepositoryError):
+    """Raised when unique constraint is violated"""
