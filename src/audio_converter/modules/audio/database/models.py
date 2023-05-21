@@ -1,7 +1,5 @@
-import uuid
-
 from sqlalchemy import Column
-from sqlalchemy import Integer
+from sqlalchemy import ForeignKey
 from sqlalchemy import String
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects import postgresql
@@ -14,6 +12,6 @@ class Audio(audio_converter.database.orm.Base):
     __tablename__ = 'audio'
 
     uuid = Column(postgresql.UUID(as_uuid=True), primary_key=True)
-    user_id = Column(Integer)
+    user_id = Column(ForeignKey('users.id'))
     user = relationship(audio_converter.modules.user.database.models.User)
     audio_filepath = Column(String)
