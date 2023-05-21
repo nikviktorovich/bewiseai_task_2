@@ -55,7 +55,7 @@ class SQLAlchemyAudioRepository(AbstractAudioRepository):
         
         if instance is None:
             raise audio_converter.common.errors.EntityNotFoundError(
-                f'Unable to find an audio with id={audio_uuid}',
+                f'Unable to find an audio with id={audio_uuid.hex}',
             )
         
         return instance
