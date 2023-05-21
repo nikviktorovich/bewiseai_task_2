@@ -8,6 +8,8 @@ import audio_converter.database.orm
 
 
 class User(audio_converter.database.orm.Base):
+    __tablename__ = 'users'
+
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True)
     access_token = Column(

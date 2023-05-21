@@ -10,6 +10,8 @@ import audio_converter.modules.user.database.models
 
 
 class Audio(audio_converter.database.orm.Base):
+    __tablename__ = 'audio'
+
     uuid = Column(String, primary_key=True)
     user_id = Column(Integer)
     user = relationship(audio_converter.modules.user.database.models.User)
