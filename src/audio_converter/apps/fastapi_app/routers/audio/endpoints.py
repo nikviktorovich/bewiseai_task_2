@@ -28,7 +28,7 @@ def add_audio(
     
     converted = audio_converter.services.converter.convert_wav_to_mp3_and_save(
         user=user,
-        wav_file=audio.file,
+        wav_file=audio.file, # type: ignore
         uow=uow,
     )
     
