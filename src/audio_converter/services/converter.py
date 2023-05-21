@@ -1,13 +1,13 @@
 import io
 import os.path
 import uuid
-from typing import Any
 
 import pydub
 import pydub.exceptions
 
 import audio_converter.config
 import audio_converter.modules.audio.domain.models
+import audio_converter.modules.audio.unit_of_work
 import audio_converter.modules.user.domain.models
 
 
@@ -32,7 +32,7 @@ def convert_wav_to_mp3(wav_file: io.IOBase, mp3_filepath: str) -> str:
 def convert_wav_to_mp3_and_save(
     user: audio_converter.modules.user.domain.models.User,
     wav_file: io.IOBase,
-    uow: Any,
+    uow: audio_converter.modules.audio.unit_of_work.AbstractAudioUnitOfWork,
 ) -> None:
     """Converts wav audio file to mp3, saves it to a file and into a database
     
@@ -57,7 +57,7 @@ def _save_mp3_to_db(
     user: audio_converter.modules.user.domain.models.User,
     mp3_uuid: str,
     mp3_filepath: str,
-    uow: Any,
+    uow: audio_converter.modules.audio.unit_of_work.AbstractAudioUnitOfWork,
 ) -> None:
     instance = audio_converter.modules.audio.domain.models.Audio(
         uuid=mp3_uuid,
