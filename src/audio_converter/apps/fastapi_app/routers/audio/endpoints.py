@@ -40,7 +40,7 @@ def add_audio(
     )
 
     return serializers.AudioRead(
-        uuid=converted.uuid,
+        uuid=converted.uuid, # type: ignore
         user_id=converted.user.id,
         audio_url=str(url),
     )
