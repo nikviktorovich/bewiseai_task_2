@@ -1,0 +1,1 @@
+from audio_converter.apps.fastapi_app.routers.audio.endpoints import router
