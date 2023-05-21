@@ -1,0 +1,16 @@
+# IDE-specific
+.vscode
+
+# Python-specific
+__pycache__
+*.pyc
+venv
+.venv
+*.egg-info/
+.pytest_cache/
+
+# Other
+*.env
+*.sqlite3
+*.db
+db/data
