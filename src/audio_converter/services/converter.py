@@ -61,7 +61,7 @@ def convert_wav_to_mp3_and_save(
     instance = _save_mp3_to_db(
         user=user,
         mp3_uuid=mp3_uuid,
-        mp3_filepath=mp3_filepath,
+        mp3_filepath=mp3_relative_path,
         uow=uow,
     )
     return instance
