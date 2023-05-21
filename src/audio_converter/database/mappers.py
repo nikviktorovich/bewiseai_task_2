@@ -1,4 +1,5 @@
 import sqlalchemy.orm
+from sqlalchemy.orm import relationship
 
 import audio_converter.modules.audio.database.models
 import audio_converter.modules.audio.domain.models
@@ -12,6 +13,9 @@ def start_mappers() -> None:
     registry.map_imperatively(
         audio_converter.modules.audio.domain.models.Audio,
         audio_converter.modules.audio.database.models.Audio,
+        properties={
+            'user': relationship(audio_converter.modules.user.domain.models.User),
+        }
     )
 
     registry.map_imperatively(
