@@ -5,6 +5,7 @@ import uuid
 import pydub
 import pydub.exceptions
 
+import audio_converter.common.errors
 import audio_converter.config
 import audio_converter.modules.audio.domain.models
 import audio_converter.modules.audio.unit_of_work
@@ -22,9 +23,15 @@ def convert_wav_to_mp3(wav_file: io.IOBase, mp3_filepath: str) -> str:
         Result mp3-file path relative to the media path
 
     Raises:
-        pydub.exceptions.CouldntDecodeError: If the file is an invalid wav-file
+        audio_converter.common.errors.BadAudioFormatError: If the file is
+            an invalid wav-file
     """
-    wav_segment: pydub.AudioSegment = pydub.AudioSegment.from_wav(wav_file)
+    try:
+        wav_segment: pydub.AudioSegment = pydub.AudioSegment.from_wav(wav_file)
+    except pydub.exceptions.CouldntDecodeError:
+        raise audio_converter.common.errors.BadAudioFormatError(
+            'Unable to decode the audio'
+        ) from None
     wav_segment.export(mp3_filepath)
     return mp3_filepath
 
@@ -43,7 +50,8 @@ def convert_wav_to_mp3_and_save(
         Generated mp3 file db entry
 
     Raises:
-        pydub.exceptions.CouldntDecodeError: If the file is an invalid wav-file
+        audio_converter.common.errors.BadAudioFormatError: If the file is
+            an invalid wav-file
     """
     mp3_uuid = uuid.uuid4().hex
     mp3_relative_path = f'{mp3_uuid}.mp3'
