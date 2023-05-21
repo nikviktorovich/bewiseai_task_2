@@ -19,4 +19,5 @@ def add_user(
         username=user_data.username,
         uow=uow,
     )
+    uow.commit()
     return serializers.UserRead.from_orm(user)
