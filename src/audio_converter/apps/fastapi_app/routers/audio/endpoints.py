@@ -31,6 +31,7 @@ def add_audio(
         wav_file=audio.file, # type: ignore
         uow=uow,
     )
+    uow.commit()
     
     url = request.url.replace_query_params(
         id=converted.uuid,
