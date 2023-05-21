@@ -39,14 +39,6 @@ def get_user_by_id(
     return uow.users.get(user)
 
 
-def get_user_by_access_token(
-    access_token: str,
-    uow: audio_converter.modules.user.unit_of_work.AbstractUserUnitOfWork =
-        Depends(get_users_uow),
-) -> audio_converter.modules.user.domain.models.User:
-    return uow.users.get_by_token(access_token)
-
-
 def get_audio_path(
     id: str,
     user: int,

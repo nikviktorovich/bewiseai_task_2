@@ -1,3 +1,4 @@
+import uuid
 from typing import List
 
 import sqlalchemy.orm
@@ -17,7 +18,7 @@ class AbstractAudioRepository:
         raise NotImplementedError()
     
 
-    def get(self, audio_uuid: str) -> models.Audio:
+    def get(self, audio_uuid: uuid.UUID) -> models.Audio:
         """Returns an instance with the specified id
         
         Raises:
@@ -49,7 +50,7 @@ class SQLAlchemyAudioRepository(AbstractAudioRepository):
         return instances
     
 
-    def get(self, audio_uuid: str) -> models.Audio:
+    def get(self, audio_uuid: uuid.UUID) -> models.Audio:
         instance = self._get_instance_set().filter_by(uuid=audio_uuid).first()
         
         if instance is None:

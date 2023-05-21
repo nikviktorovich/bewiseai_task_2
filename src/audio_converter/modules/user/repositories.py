@@ -1,3 +1,4 @@
+import uuid
 from typing import List
 
 import sqlalchemy.orm
@@ -26,7 +27,7 @@ class AbstractUserRepository:
         raise NotImplementedError()
     
 
-    def get_by_token(self, access_token: str) -> models.User:
+    def get_by_token(self, access_token: uuid.UUID) -> models.User:
         """Returns an instance with the specified access token
         
         Raises:
@@ -69,7 +70,7 @@ class SQLAlchemyUserRepository(AbstractUserRepository):
         return instance
     
 
-    def get_by_token(self, access_token: str) -> models.User:
+    def get_by_token(self, access_token: uuid.UUID) -> models.User:
         instances = self._get_instance_set().filter_by(access_token=access_token)
         instance = instances.first()
         
