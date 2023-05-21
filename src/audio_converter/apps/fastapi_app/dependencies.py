@@ -1,4 +1,5 @@
-import fastapi
+import uuid
+
 from fastapi import Depends
 
 import audio_converter.modules.audio.unit_of_work
@@ -43,8 +44,9 @@ def auth_user(
     uow: audio_converter.modules.user.unit_of_work.AbstractUserUnitOfWork =
         Depends(get_users_uow),
 ) -> audio_converter.modules.user.domain.models.User:
+    uuid_access_token = uuid.UUID(hex=access_token)
     return audio_converter.services.users.auth_user(
         user_id=user,
-        access_token=access_token,
+        access_token=uuid_access_token,
         uow=uow,
     )

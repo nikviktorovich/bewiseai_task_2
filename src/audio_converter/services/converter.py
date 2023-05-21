@@ -10,6 +10,7 @@ import audio_converter.config
 import audio_converter.modules.audio.domain.models
 import audio_converter.modules.audio.unit_of_work
 import audio_converter.modules.user.domain.models
+import audio_converter.services.uuid_generator
 
 
 def convert_wav_to_mp3(wav_file: io.IOBase, mp3_filepath: str) -> str:
@@ -53,7 +54,7 @@ def convert_wav_to_mp3_and_save(
         audio_converter.common.errors.BadAudioFormatError: If the file is
             an invalid wav-file
     """
-    mp3_uuid = uuid.uuid4().hex
+    mp3_uuid = audio_converter.services.uuid_generator.generate_uuid()
     mp3_relative_path = f'{mp3_uuid}.mp3'
     mp3_filepath = _get_media_file_path(mp3_relative_path)
     convert_wav_to_mp3(wav_file, mp3_filepath)
@@ -68,7 +69,7 @@ def convert_wav_to_mp3_and_save(
 
 def _save_mp3_to_db(
     user: audio_converter.modules.user.domain.models.User,
-    mp3_uuid: str,
+    mp3_uuid: uuid.UUID,
     mp3_filepath: str,
     uow: audio_converter.modules.audio.unit_of_work.AbstractAudioUnitOfWork,
 ) -> audio_converter.modules.audio.domain.models.Audio:

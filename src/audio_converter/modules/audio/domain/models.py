@@ -1,12 +1,12 @@
 import dataclasses
-from typing import Any
+import uuid
 
 import audio_converter.modules.user.domain.models
 
 
 @dataclasses.dataclass
 class Audio:
-    uuid: Any
+    uuid: uuid.UUID
     user_id: int
     user: audio_converter.modules.user.domain.models.User
     audio_filepath: str

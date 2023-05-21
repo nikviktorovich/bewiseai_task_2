@@ -1,4 +1,5 @@
 import dataclasses
+import uuid
 from typing import Any
 
 
@@ -6,4 +7,4 @@ from typing import Any
 class User:
     id: Any
     username: str
-    access_token: str
+    access_token: uuid.UUID
