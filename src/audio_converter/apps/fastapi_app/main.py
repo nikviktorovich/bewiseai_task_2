@@ -55,6 +55,19 @@ def handle_entity_not_found_error(
     )
 
 
+@app.exception_handler(FileNotFoundError)
+def handle_file_not_found_error(
+    request: fastapi.Request,
+    exception: FileNotFoundError,
+):
+    return fastapi.responses.JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={
+            'detail': str(exception),
+        },
+    )
+
+
 # Routers
 app.include_router(audio_converter.apps.fastapi_app.routers.audio.router)
 app.include_router(audio_converter.apps.fastapi_app.routers.users.router)

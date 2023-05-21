@@ -1,3 +1,4 @@
+import os.path
 import uuid
 
 import fastapi
@@ -61,4 +62,7 @@ def add_audio(
 def get_audio(
     audio_path: str = Depends(dependencies.get_audio_path)
 ):
+    if not os.path.exists(audio_path):
+        raise FileNotFoundError('Unable to find the specified record')
+
     return fastapi.responses.FileResponse(audio_path, media_type='audio/mpeg')
