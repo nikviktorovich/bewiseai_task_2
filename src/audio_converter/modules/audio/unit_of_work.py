@@ -4,6 +4,8 @@ import sqlalchemy
 import sqlalchemy.orm
 
 import audio_converter.config
+import audio_converter.modules.user.repositories
+import audio_converter.modules.user.unit_of_work
 from audio_converter.modules.audio import repositories
 
 
@@ -58,3 +60,22 @@ class SQLAlchemyAudioUnitOfWork(AbstractAudioUnitOfWork):
 
     def __exit__(self, *args, **kwargs) -> None:
         self.session.close()
+
+
+class AbstractAudioAndUserUnitOfWork(
+    AbstractAudioUnitOfWork,
+    audio_converter.modules.user.unit_of_work.AbstractUserUnitOfWork,
+):
+    pass
+
+
+class SQLAlchemyAudioAndUserUnitOfWork(
+    SQLAlchemyAudioUnitOfWork,
+    AbstractAudioAndUserUnitOfWork,
+):
+    def __enter__(self) -> 'AbstractAudioAndUserUnitOfWork':
+        super().__enter__()
+        self.users = audio_converter.modules.user.repositories.SQLAlchemyUserRepository(
+            self.session,
+        )
+        return self
