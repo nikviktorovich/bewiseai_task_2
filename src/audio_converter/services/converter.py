@@ -33,17 +33,21 @@ def convert_wav_to_mp3_and_save(
     user: audio_converter.modules.user.domain.models.User,
     wav_file: io.IOBase,
     uow: audio_converter.modules.audio.unit_of_work.AbstractAudioUnitOfWork,
-) -> None:
+) -> str:
     """Converts wav audio file to mp3, saves it to a file and into a database
     
     Args:
         wav_file: wav file handler
 
+    Returns:
+        Generated mp3 file path relative to the media path
+
     Raises:
         pydub.exceptions.CouldntDecodeError: If the file is an invalid wav-file
     """
     mp3_uuid = uuid.uuid4().hex
-    mp3_filepath = _get_media_file_path(f'{mp3_uuid}.mp3')
+    mp3_relative_path = f'{mp3_uuid}.mp3'
+    mp3_filepath = _get_media_file_path(mp3_relative_path)
     convert_wav_to_mp3(wav_file, mp3_filepath)
     _save_mp3_to_db(
         user=user,
@@ -51,6 +55,7 @@ def convert_wav_to_mp3_and_save(
         mp3_filepath=mp3_filepath,
         uow=uow,
     )
+    return mp3_relative_path
 
 
 def _save_mp3_to_db(
