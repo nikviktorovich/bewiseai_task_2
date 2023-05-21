@@ -21,3 +21,9 @@ def get_database_engine() -> sqlalchemy.engine.Engine:
     connection_url = get_postgres_connection_url()
     engine = sqlalchemy.create_engine(url=connection_url)
     return engine
+
+
+def get_media_path() -> str:
+    """Returns path to media directory"""
+    media_path = os.environ['MEDIA_PATH']
+    return media_path
