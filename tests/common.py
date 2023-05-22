@@ -1,14 +1,15 @@
+import uuid
 from typing import Dict
 from typing import List
 
 import audio_converter.common.errors
 import audio_converter.modules.audio.domain.models
 import audio_converter.modules.audio.repositories
-import audio_converter.modules.audio.unit_of_work
+import audio_converter.services.unit_of_work
 
 
 class FakeAudioRepository(audio_converter.modules.audio.repositories.AbstractAudioRepository):
-    audio_set: Dict[str, audio_converter.modules.audio.domain.models.Audio]
+    audio_set: Dict[uuid.UUID, audio_converter.modules.audio.domain.models.Audio]
 
 
     def __init__(
@@ -31,7 +32,7 @@ class FakeAudioRepository(audio_converter.modules.audio.repositories.AbstractAud
     ) -> audio_converter.modules.audio.domain.models.Audio:
         if audio_uuid not in self.audio_set:
             raise audio_converter.common.errors.EntityNotFoundError(
-                f'Unable to find an audio with if={audio_uuid}',
+                f'Unable to find an audio with id={audio_uuid}',
             )
         return self.audio_set[audio_uuid]
 
@@ -44,7 +45,7 @@ class FakeAudioRepository(audio_converter.modules.audio.repositories.AbstractAud
         return instance
 
 
-class FakeAudioUOW(audio_converter.modules.audio.unit_of_work.AbstractAudioUnitOfWork):
+class FakeAudioUOW(audio_converter.services.unit_of_work.AbstractUnitOfWork):
     audio: FakeAudioRepository
 
 
@@ -62,7 +63,7 @@ class FakeAudioUOW(audio_converter.modules.audio.unit_of_work.AbstractAudioUnitO
 
     def __enter__(
         self,
-    ) -> audio_converter.modules.audio.unit_of_work.AbstractAudioUnitOfWork:
+    ) -> audio_converter.services.unit_of_work.AbstractUnitOfWork:
         return self
     
 
