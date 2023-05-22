@@ -7,7 +7,7 @@ import audio_converter.config
 import audio_converter.modules.user.domain.models
 import audio_converter.services.converter
 import audio_converter.services.uuid
-from . import common
+from .. import common
 
 
 @pytest.mark.usefixtures('detour_media_path')
