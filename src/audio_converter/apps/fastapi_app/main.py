@@ -74,7 +74,20 @@ def handle_file_not_found_error(
     exception: FileNotFoundError,
 ):
     return fastapi.responses.JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND,
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={
+            'detail': str(exception),
+        },
+    )
+
+
+@app.exception_handler(audio_converter.common.errors.BadUUIDError)
+def handle_bad_uuid_error(
+    request: fastapi.Request,
+    exception: FileNotFoundError,
+):
+    return fastapi.responses.JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
             'detail': str(exception),
         },

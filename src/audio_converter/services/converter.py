@@ -8,9 +8,9 @@ import pydub.exceptions
 import audio_converter.common.errors
 import audio_converter.config
 import audio_converter.modules.audio.domain.models
-import audio_converter.modules.audio.unit_of_work
 import audio_converter.modules.user.domain.models
-import audio_converter.services.uuid_generator
+import audio_converter.services.unit_of_work
+import audio_converter.services.uuid
 
 
 def convert_wav_to_mp3(wav_file: io.IOBase, mp3_filepath: str) -> str:
@@ -40,7 +40,7 @@ def convert_wav_to_mp3(wav_file: io.IOBase, mp3_filepath: str) -> str:
 def convert_wav_to_mp3_and_save(
     user: audio_converter.modules.user.domain.models.User,
     wav_file: io.IOBase,
-    uow: audio_converter.modules.audio.unit_of_work.AbstractAudioUnitOfWork,
+    uow: audio_converter.services.unit_of_work.AbstractUnitOfWork,
 ) -> audio_converter.modules.audio.domain.models.Audio:
     """Converts wav audio file to mp3, saves it to a file and into a database
     
@@ -54,9 +54,9 @@ def convert_wav_to_mp3_and_save(
         audio_converter.common.errors.BadAudioFormatError: If the file is
             an invalid wav-file
     """
-    mp3_uuid = audio_converter.services.uuid_generator.generate_uuid()
+    mp3_uuid = audio_converter.services.uuid.generate_uuid()
     mp3_relative_path = f'{mp3_uuid}.mp3'
-    mp3_filepath = _get_media_file_path(mp3_relative_path)
+    mp3_filepath = get_media_file_path(mp3_relative_path)
     convert_wav_to_mp3(wav_file, mp3_filepath)
     instance = _save_mp3_to_db(
         user=user,
@@ -71,7 +71,7 @@ def _save_mp3_to_db(
     user: audio_converter.modules.user.domain.models.User,
     mp3_uuid: uuid.UUID,
     mp3_filepath: str,
-    uow: audio_converter.modules.audio.unit_of_work.AbstractAudioUnitOfWork,
+    uow: audio_converter.services.unit_of_work.AbstractUnitOfWork,
 ) -> audio_converter.modules.audio.domain.models.Audio:
     instance = audio_converter.modules.audio.domain.models.Audio(
         uuid=mp3_uuid,
@@ -83,6 +83,25 @@ def _save_mp3_to_db(
     return instance
 
 
-def _get_media_file_path(filepath: str) -> str:
+def get_media_file_path(filepath: str) -> str:
     media_path = audio_converter.config.get_media_path()
     return os.path.join(media_path, filepath)
+
+
+def get_audio_path(
+    audio: audio_converter.modules.audio.domain.models.Audio,
+) -> str:
+    """Returns absolute path to the media file
+
+    Args:
+        audio - Instance of the audio record
+
+    Raises:
+        FileNotFoundError - If the file path does not exist
+    """
+    audio_abs_path = get_media_file_path(audio.audio_filepath)
+
+    if not os.path.exists(audio_abs_path):
+        raise FileNotFoundError('Unable to find the specified record')
+
+    return audio_abs_path

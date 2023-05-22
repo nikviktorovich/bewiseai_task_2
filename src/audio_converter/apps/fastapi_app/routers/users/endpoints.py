@@ -1,10 +1,10 @@
 import fastapi
 from fastapi import Depends
 
+import audio_converter.services.unit_of_work
 import audio_converter.services.users
 from audio_converter.apps.fastapi_app import dependencies
 from audio_converter.apps.fastapi_app.routers.users import serializers
-from audio_converter.modules.user import unit_of_work
 
 
 router = fastapi.APIRouter(prefix='/users')
@@ -13,11 +13,17 @@ router = fastapi.APIRouter(prefix='/users')
 @router.post('/')
 def add_user(
     user_data: serializers.UserCreate,
-    uow: unit_of_work.AbstractUserUnitOfWork = Depends(dependencies.get_users_uow),
+    uow: audio_converter.services.unit_of_work.AbstractUnitOfWork =
+        Depends(dependencies.get_uow),
 ):
     user = audio_converter.services.users.create_user(
         username=user_data.username,
         uow=uow,
     )
     uow.commit()
-    return serializers.UserRead.from_orm(user)
+    
+    return serializers.UserRead(
+        id=user.id,
+        username=user.username,
+        access_token=user.access_token.hex,
+    )

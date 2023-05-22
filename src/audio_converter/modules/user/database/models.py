@@ -6,7 +6,7 @@ from sqlalchemy import String
 from sqlalchemy.dialects import postgresql
 
 import audio_converter.database.orm
-import audio_converter.services.uuid_generator
+import audio_converter.services.uuid
 
 
 class User(audio_converter.database.orm.Base):
@@ -18,5 +18,5 @@ class User(audio_converter.database.orm.Base):
         postgresql.UUID(as_uuid=True),
         unique=True,
         nullable=False,
-        default=audio_converter.services.uuid_generator.generate_uuid,
+        default=audio_converter.services.uuid.generate_uuid,
     )

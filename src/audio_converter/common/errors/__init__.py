@@ -5,3 +5,4 @@ from audio_converter.common.errors.auth import InvalidAccessTokenError
 from audio_converter.common.errors.repositories import RepositoryError
 from audio_converter.common.errors.repositories import EntityNotFoundError
 from audio_converter.common.errors.repositories import EntityAlreadyExists
+from audio_converter.common.errors.uuid import BadUUIDError
