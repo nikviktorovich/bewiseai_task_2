@@ -38,9 +38,6 @@ class SQLAlchemyUnitOfWork(UnitOfWork):
         self,
         engine: Optional[sqlalchemy.engine.Engine] = None,
     ) -> None:
-        if engine is None:
-            engine = audio_converter.config.get_database_engine()
-        
         self.session_factory = sqlalchemy.orm.sessionmaker(bind=engine)
     
 
