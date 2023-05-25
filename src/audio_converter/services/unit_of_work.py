@@ -8,9 +8,9 @@ import audio_converter.modules.audio
 import audio_converter.modules.user
 
 
-class AbstractUnitOfWork:
-    audio: audio_converter.modules.audio.AbstractAudioRepository
-    users: audio_converter.modules.user.AbstractUserRepository
+class UnitOfWork:
+    audio: audio_converter.modules.audio.AudioRepository
+    users: audio_converter.modules.user.UserRepository
 
 
     def commit(self) -> None:
@@ -21,7 +21,7 @@ class AbstractUnitOfWork:
         raise NotImplementedError()
     
 
-    def __enter__(self) -> 'AbstractUnitOfWork':
+    def __enter__(self) -> 'UnitOfWork':
         raise NotImplementedError()
     
 
@@ -29,7 +29,7 @@ class AbstractUnitOfWork:
         raise NotImplementedError()
 
 
-class UnitOfWork(AbstractUnitOfWork):
+class SQLAlchemyUnitOfWork(UnitOfWork):
     session_factory: sqlalchemy.orm.sessionmaker
     session: sqlalchemy.orm.Session
 
@@ -52,7 +52,7 @@ class UnitOfWork(AbstractUnitOfWork):
         self.session.rollback()
     
 
-    def __enter__(self) -> 'AbstractUnitOfWork':
+    def __enter__(self) -> 'UnitOfWork':
         self.session = self.session_factory()
         self.audio = audio_converter.modules.audio.SQLAlchemyAudioRepository(
             self.session,

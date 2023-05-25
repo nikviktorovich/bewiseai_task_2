@@ -3,7 +3,7 @@ import uuid
 from . import abstract
 
 
-class DefaultUUIDProvider(abstract.AbstractUUIDProvider):
+class DefaultUUIDProvider(abstract.UUIDProvider):
     def parse(self, hex_uuid: str) -> uuid.UUID:
         return uuid.UUID(hex=hex_uuid)
     

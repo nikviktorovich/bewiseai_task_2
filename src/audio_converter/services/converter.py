@@ -40,7 +40,7 @@ def convert_wav_to_mp3(wav_file: io.IOBase, mp3_filepath: str) -> str:
 def convert_wav_to_mp3_and_save(
     user: audio_converter.modules.user.domain.models.User,
     wav_file: io.IOBase,
-    uow: audio_converter.services.unit_of_work.AbstractUnitOfWork,
+    uow: audio_converter.services.unit_of_work.UnitOfWork,
 ) -> audio_converter.modules.audio.domain.models.Audio:
     """Converts wav audio file to mp3, saves it to a file and into a database
     
@@ -71,7 +71,7 @@ def _save_mp3_to_db(
     user: audio_converter.modules.user.domain.models.User,
     mp3_uuid: uuid.UUID,
     mp3_filepath: str,
-    uow: audio_converter.services.unit_of_work.AbstractUnitOfWork,
+    uow: audio_converter.services.unit_of_work.UnitOfWork,
 ) -> audio_converter.modules.audio.domain.models.Audio:
     instance = audio_converter.modules.audio.domain.models.Audio(
         uuid=mp3_uuid,

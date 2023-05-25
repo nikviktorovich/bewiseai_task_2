@@ -12,11 +12,11 @@ import audio_converter.services.unit_of_work
 
 def get_uow():
     """Returns sqlalchemy bound unit of work of users module"""
-    uow = audio_converter.services.unit_of_work.UnitOfWork()
+    uow = audio_converter.services.unit_of_work.SQLAlchemyUnitOfWork()
     with uow:
         yield uow
 
 
-def get_uuid_provider() -> audio_converter.adapters.uuid.AbstractUUIDProvider:
+def get_uuid_provider() -> audio_converter.adapters.uuid.UUIDProvider:
     """Returns an UUID provider"""
     return audio_converter.adapters.uuid.DefaultUUIDProvider()

@@ -8,7 +8,7 @@ from audio_converter.modules.user.domain import models
 
 def create_user(
     username: str,
-    uow: audio_converter.services.unit_of_work.AbstractUnitOfWork,
+    uow: audio_converter.services.unit_of_work.UnitOfWork,
 ) -> models.User:
     existing_users = uow.users.list(username=username)
 
@@ -30,7 +30,7 @@ def create_user(
 def auth_user(
     user_id: int,
     access_token: uuid.UUID,
-    uow: audio_converter.services.unit_of_work.AbstractUnitOfWork,
+    uow: audio_converter.services.unit_of_work.UnitOfWork,
 ) -> models.User:
     user = uow.users.get(user_id)
 

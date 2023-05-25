@@ -13,7 +13,7 @@ router = fastapi.APIRouter(prefix='/users')
 @router.post('/')
 def add_user(
     user_data: serializers.UserCreate,
-    uow: audio_converter.services.unit_of_work.AbstractUnitOfWork =
+    uow: audio_converter.services.unit_of_work.UnitOfWork =
         Depends(dependencies.get_uow),
 ):
     user = audio_converter.services.users.create_user(

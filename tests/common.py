@@ -8,7 +8,7 @@ import audio_converter.modules.audio.repositories
 import audio_converter.services.unit_of_work
 
 
-class FakeAudioRepository(audio_converter.modules.audio.repositories.AbstractAudioRepository):
+class FakeAudioRepository(audio_converter.modules.audio.repositories.AudioRepository):
     audio_set: Dict[uuid.UUID, audio_converter.modules.audio.domain.models.Audio]
 
 
@@ -45,7 +45,7 @@ class FakeAudioRepository(audio_converter.modules.audio.repositories.AbstractAud
         return instance
 
 
-class FakeAudioUOW(audio_converter.services.unit_of_work.AbstractUnitOfWork):
+class FakeAudioUOW(audio_converter.services.unit_of_work.UnitOfWork):
     audio: FakeAudioRepository
 
 
@@ -63,7 +63,7 @@ class FakeAudioUOW(audio_converter.services.unit_of_work.AbstractUnitOfWork):
 
     def __enter__(
         self,
-    ) -> audio_converter.services.unit_of_work.AbstractUnitOfWork:
+    ) -> audio_converter.services.unit_of_work.UnitOfWork:
         return self
     
 

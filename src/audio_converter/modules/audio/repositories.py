@@ -7,7 +7,7 @@ import audio_converter.common.errors
 from audio_converter.modules.audio.domain import models
 
 
-class AbstractAudioRepository:
+class AudioRepository:
     """Abstract audio repository"""
     def list(self, **filters) -> List[models.Audio]:
         """Returns list of all matching instances
@@ -32,7 +32,7 @@ class AbstractAudioRepository:
         raise NotImplementedError()
 
 
-class SQLAlchemyAudioRepository(AbstractAudioRepository):
+class SQLAlchemyAudioRepository(AudioRepository):
     """Audio repository implementation bound to SQLAlchemy session"""
     session: sqlalchemy.orm.Session
 

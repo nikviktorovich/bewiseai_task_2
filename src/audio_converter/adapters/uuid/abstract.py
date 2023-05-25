@@ -1,7 +1,7 @@
 import uuid
 
 
-class AbstractUUIDProvider:
+class UUIDProvider:
     def parse(self, hex_uuid: str) -> uuid.UUID:
         raise NotImplementedError()
     

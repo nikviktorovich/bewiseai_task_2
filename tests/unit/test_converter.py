@@ -13,7 +13,7 @@ from .. import common
 
 @pytest.mark.usefixtures('detour_media_path')
 def test_audio_converter(
-    uuid_provider: audio_converter.adapters.uuid.AbstractUUIDProvider,
+    uuid_provider: audio_converter.adapters.uuid.UUIDProvider,
 ):
     test_user = audio_converter.modules.user.domain.models.User(
         id=1,

@@ -24,9 +24,9 @@ def add_audio(
     access_token_hex: Annotated[str, Query(alias='access_token')],
     audio: UploadFile,
     request: fastapi.Request,
-    uow: audio_converter.services.unit_of_work.AbstractUnitOfWork =
+    uow: audio_converter.services.unit_of_work.UnitOfWork =
         Depends(dependencies.get_uow),
-    uuid_provider: audio_converter.adapters.uuid.AbstractUUIDProvider =
+    uuid_provider: audio_converter.adapters.uuid.UUIDProvider =
         Depends(dependencies.get_uuid_provider),
 ):
     if audio.content_type not in ['audio/wav', 'audio/x-wav']:
@@ -66,9 +66,9 @@ def get_audio(
     audio_uuid_hex: Annotated[str, Query(alias='id')],
     user_id: Annotated[int, Query(alias='user')],
     access_token_hex: Annotated[str, Query(alias='access_token')],
-    uow: audio_converter.services.unit_of_work.AbstractUnitOfWork =
+    uow: audio_converter.services.unit_of_work.UnitOfWork =
         Depends(dependencies.get_uow),
-    uuid_provider: audio_converter.adapters.uuid.AbstractUUIDProvider =
+    uuid_provider: audio_converter.adapters.uuid.UUIDProvider =
         Depends(dependencies.get_uuid_provider),
 ):
     user = audio_converter.services.users.auth_user(
