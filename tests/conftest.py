@@ -2,6 +2,8 @@ import os
 
 import pytest
 
+import audio_converter.adapters.uuid
+
 
 TEST_MEDIA_PATH = './tests/media'
 
@@ -12,3 +14,8 @@ def detour_media_path():
     os.environ['MEDIA_PATH'] = TEST_MEDIA_PATH
     yield
     os.environ['MEDIA_PATH'] = old_path
+
+
+@pytest.fixture
+def uuid_provider():
+    return audio_converter.adapters.uuid.DefaultUUIDProvider()

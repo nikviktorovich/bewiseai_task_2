@@ -1,4 +1,3 @@
-import uuid
 from typing import Annotated
 
 import fastapi
@@ -7,11 +6,11 @@ from fastapi import Depends
 from fastapi import Query
 from fastapi import UploadFile
 
+import audio_converter.adapters.uuid
 import audio_converter.common.errors
 import audio_converter.services.converter
 import audio_converter.services.unit_of_work
 import audio_converter.services.users
-import audio_converter.services.uuid
 from audio_converter.apps.fastapi_app import dependencies
 from audio_converter.apps.fastapi_app.routers.audio import serializers
 
@@ -27,6 +26,8 @@ def add_audio(
     request: fastapi.Request,
     uow: audio_converter.services.unit_of_work.AbstractUnitOfWork =
         Depends(dependencies.get_uow),
+    uuid_provider: audio_converter.adapters.uuid.AbstractUUIDProvider =
+        Depends(dependencies.get_uuid_provider),
 ):
     if audio.content_type not in ['audio/wav', 'audio/x-wav']:
         raise audio_converter.common.errors.BadAudioFormatError(
@@ -35,7 +36,7 @@ def add_audio(
 
     user = audio_converter.services.users.auth_user(
         user_id=user_id,
-        access_token=audio_converter.services.uuid.parse_uuid(hex=access_token_hex),
+        access_token=uuid_provider.parse(access_token_hex),
         uow=uow,
     )
 
@@ -67,15 +68,17 @@ def get_audio(
     access_token_hex: Annotated[str, Query(alias='access_token')],
     uow: audio_converter.services.unit_of_work.AbstractUnitOfWork =
         Depends(dependencies.get_uow),
+    uuid_provider: audio_converter.adapters.uuid.AbstractUUIDProvider =
+        Depends(dependencies.get_uuid_provider),
 ):
     user = audio_converter.services.users.auth_user(
         user_id=user_id,
-        access_token=audio_converter.services.uuid.parse_uuid(hex=access_token_hex),
+        access_token=uuid_provider.parse(access_token_hex),
         uow=uow,
     )
 
     audio = uow.audio.get(
-        audio_uuid=audio_converter.services.uuid.parse_uuid(hex=audio_uuid_hex),
+        audio_uuid=uuid_provider.parse(audio_uuid_hex),
     )
 
     if audio.user != user:

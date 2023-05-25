@@ -3,6 +3,7 @@ import os.path
 
 import pytest
 
+import audio_converter.adapters.uuid
 import audio_converter.config
 import audio_converter.modules.user.domain.models
 import audio_converter.services.converter
@@ -11,11 +12,13 @@ from .. import common
 
 
 @pytest.mark.usefixtures('detour_media_path')
-def test_audio_converter():
+def test_audio_converter(
+    uuid_provider: audio_converter.adapters.uuid.AbstractUUIDProvider,
+):
     test_user = audio_converter.modules.user.domain.models.User(
         id=1,
         username='someuser',
-        access_token=audio_converter.services.uuid.generate_uuid(),
+        access_token=uuid_provider.generate(),
     )
     wav_filepath = 'test_wav.wav'
 
