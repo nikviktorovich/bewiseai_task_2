@@ -29,11 +29,6 @@ def add_audio(
     uuid_provider: audio_converter.adapters.uuid.UUIDProvider =
         Depends(dependencies.get_uuid_provider),
 ):
-    if audio.content_type not in ['audio/wav', 'audio/x-wav']:
-        raise audio_converter.common.errors.BadAudioFormatError(
-            'Wrong audio format, wav-file expected',
-        )
-
     user = audio_converter.services.users.auth_user(
         user_id=user_id,
         access_token=uuid_provider.parse(access_token_hex),
