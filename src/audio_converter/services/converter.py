@@ -1,51 +1,30 @@
-import io
-import os.path
-import uuid
+from typing import BinaryIO
 
-import pydub
-import pydub.exceptions
-
-import audio_converter.common.errors
-import audio_converter.config
+import audio_converter.adapters.audio_manager
+import audio_converter.adapters.converter
+import audio_converter.adapters.uuid
 import audio_converter.modules.audio.domain.models
 import audio_converter.modules.user.domain.models
 import audio_converter.services.unit_of_work
-import audio_converter.services.uuid
-
-
-def convert_wav_to_mp3(wav_file: io.IOBase, mp3_filepath: str) -> str:
-    """Converts wav audio file to mp3 and returns filepath to the mp3
-    
-    Args:
-        wav_file: wav file handler
-        mp3_filepath: path to the new generated mp3-file
-    
-    Returns:
-        Result mp3-file path relative to the media path
-
-    Raises:
-        audio_converter.common.errors.BadAudioFormatError: If the file is
-            an invalid wav-file
-    """
-    try:
-        wav_segment: pydub.AudioSegment = pydub.AudioSegment.from_wav(wav_file)
-    except pydub.exceptions.CouldntDecodeError:
-        raise audio_converter.common.errors.BadAudioFormatError(
-            'Unable to decode the audio'
-        ) from None
-    wav_segment.export(mp3_filepath)
-    return mp3_filepath
 
 
 def convert_wav_to_mp3_and_save(
+    uuid_provider: audio_converter.adapters.uuid.UUIDProvider,
+    converter: audio_converter.adapters.converter.AudioConverter,
+    audio_manager: audio_converter.adapters.audio_manager.AudioManager,
+    wav_file: BinaryIO,
     user: audio_converter.modules.user.domain.models.User,
-    wav_file: io.IOBase,
     uow: audio_converter.services.unit_of_work.UnitOfWork,
 ) -> audio_converter.modules.audio.domain.models.Audio:
-    """Converts wav audio file to mp3, saves it to a file and into a database
+    """Converts wav audio file to mp3 and saves it to database
     
     Args:
-        wav_file: wav file handler
+        uuid_provider: uuid provider adapter instance
+        converter: audio converter adapter instance
+        audio_manager: audio manager adapter instance
+        wav_file: wav file stream to convert from
+        user: user domain model
+        uow: unit of work instance
 
     Returns:
         Generated mp3 file db entry
@@ -54,54 +33,15 @@ def convert_wav_to_mp3_and_save(
         audio_converter.common.errors.BadAudioFormatError: If the file is
             an invalid wav-file
     """
-    mp3_uuid = audio_converter.services.uuid.generate_uuid()
-    mp3_relative_path = f'{mp3_uuid}.mp3'
-    mp3_filepath = get_media_file_path(mp3_relative_path)
-    convert_wav_to_mp3(wav_file, mp3_filepath)
-    instance = _save_mp3_to_db(
-        user=user,
-        mp3_uuid=mp3_uuid,
-        mp3_filepath=mp3_relative_path,
-        uow=uow,
-    )
-    return instance
+    mp3_uuid = uuid_provider.generate()
 
-
-def _save_mp3_to_db(
-    user: audio_converter.modules.user.domain.models.User,
-    mp3_uuid: uuid.UUID,
-    mp3_filepath: str,
-    uow: audio_converter.services.unit_of_work.UnitOfWork,
-) -> audio_converter.modules.audio.domain.models.Audio:
-    instance = audio_converter.modules.audio.domain.models.Audio(
-        uuid=mp3_uuid,
-        user_id=user.id,
-        user=user,
-        audio_filepath=mp3_filepath,
-    )
+    with converter.convert(wav_file) as mp3_stream:
+        instance = audio_manager.save(
+            audio_uuid=mp3_uuid,
+            user=user,
+            audio_stream=mp3_stream,
+        )
+    
     uow.audio.add(instance)
+    
     return instance
-
-
-def get_media_file_path(filepath: str) -> str:
-    media_path = audio_converter.config.get_media_path()
-    return os.path.join(media_path, filepath)
-
-
-def get_audio_path(
-    audio: audio_converter.modules.audio.domain.models.Audio,
-) -> str:
-    """Returns absolute path to the media file
-
-    Args:
-        audio - Instance of the audio record
-
-    Raises:
-        FileNotFoundError - If the file path does not exist
-    """
-    audio_abs_path = get_media_file_path(audio.audio_filepath)
-
-    if not os.path.exists(audio_abs_path):
-        raise FileNotFoundError('Unable to find the specified record')
-
-    return audio_abs_path

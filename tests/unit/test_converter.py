@@ -3,6 +3,8 @@ import os.path
 
 import pytest
 
+import audio_converter.adapters.audio_manager
+import audio_converter.adapters.converter
 import audio_converter.adapters.uuid
 import audio_converter.config
 import audio_converter.modules.user.domain.models
@@ -27,16 +29,25 @@ def test_audio_converter(
 
     repo = common.FakeAudioRepository([])
     uow = common.FakeAudioUOW(repo)
+    converter = audio_converter.adapters.converter.PydubAudioConverter()
+    audio_manager = audio_converter.adapters.audio_manager.FilesystemAudioManager(
+        media_path=media_path,
+        file_extension='mp3',
+    )
+
     with open(wav_full_path, 'rb') as wav_file:
         mp3_audio = audio_converter.services.converter.convert_wav_to_mp3_and_save(
-            user=test_user,
+            uuid_provider=uuid_provider,
+            converter=converter,
+            audio_manager=audio_manager,
             wav_file=wav_file,
+            user=test_user,
             uow=uow
         )
     
     # Asserting that audio set is not empty
     assert uow.audio.audio_set
-    
-    mp3_full_path = audio_converter.services.converter.get_audio_path(mp3_audio)
+
+    mp3_full_path = os.path.join(media_path, mp3_audio.audio_filepath)
     assert os.path.exists(mp3_full_path)
     os.remove(mp3_full_path)

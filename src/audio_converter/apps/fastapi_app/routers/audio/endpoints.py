@@ -6,6 +6,8 @@ from fastapi import Depends
 from fastapi import Query
 from fastapi import UploadFile
 
+import audio_converter.adapters.audio_manager
+import audio_converter.adapters.converter
 import audio_converter.adapters.uuid
 import audio_converter.common.errors
 import audio_converter.services.converter
@@ -28,6 +30,10 @@ def add_audio(
         Depends(dependencies.get_uow),
     uuid_provider: audio_converter.adapters.uuid.UUIDProvider =
         Depends(dependencies.get_uuid_provider),
+    converter: audio_converter.adapters.converter.AudioConverter =
+        Depends(dependencies.get_audio_converter),
+    audio_manager: audio_converter.adapters.audio_manager.AudioManager = 
+        Depends(dependencies.get_audio_manager),
 ):
     user = audio_converter.services.users.auth_user(
         user_id=user_id,
@@ -36,8 +42,11 @@ def add_audio(
     )
 
     converted = audio_converter.services.converter.convert_wav_to_mp3_and_save(
+        uuid_provider=uuid_provider,
+        converter=converter,
+        audio_manager=audio_manager,
+        wav_file=audio.file,
         user=user,
-        wav_file=audio.file, # type: ignore
         uow=uow,
     )
     uow.commit()
@@ -65,6 +74,8 @@ def get_audio(
         Depends(dependencies.get_uow),
     uuid_provider: audio_converter.adapters.uuid.UUIDProvider =
         Depends(dependencies.get_uuid_provider),
+    audio_manager: audio_converter.adapters.audio_manager.AudioManager = 
+        Depends(dependencies.get_audio_manager),
 ):
     user = audio_converter.services.users.auth_user(
         user_id=user_id,
@@ -81,5 +92,8 @@ def get_audio(
             f'You are not the owner of the audio',
         )
 
-    audio_path = audio_converter.services.converter.get_audio_path(audio)
-    return fastapi.responses.FileResponse(audio_path, media_type='audio/mpeg')
+    managed_stream = audio_manager.load_iterator(audio)
+    return fastapi.responses.StreamingResponse(
+        managed_stream,
+        media_type='audio/mpeg',
+    )
