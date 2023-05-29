@@ -4,6 +4,7 @@ import fastapi
 import fastapi.responses
 from fastapi import Depends
 from fastapi import Query
+from fastapi import status
 from fastapi import UploadFile
 
 import audio_converter.adapters.audio_manager
@@ -20,7 +21,7 @@ from audio_converter.apps.fastapi_app.routers.audio import serializers
 router = fastapi.APIRouter(prefix='/record')
 
 
-@router.post('/')
+@router.post('/', status_code=status.HTTP_201_CREATED)
 def add_audio(
     user_id: Annotated[int, Query(alias='user')],
     access_token_hex: Annotated[str, Query(alias='access_token')],
