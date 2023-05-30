@@ -14,4 +14,3 @@ class Audio(audio_converter.database.orm.Base):
     uuid = Column(postgresql.UUID(as_uuid=True), primary_key=True)
     user_id = Column(ForeignKey('users.id'))
     user = relationship(audio_converter.modules.user.database.models.User)
-    audio_filepath = Column(String)

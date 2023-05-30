@@ -30,7 +30,7 @@ class FilesystemAudioManager(abstract.AudioManager):
         audio_stream: BinaryIO,
     ) -> audio_converter.modules.audio.domain.models.Audio:
         file_extension = f'.{self.file_extension}' or ''
-        relative_audio_path = f'{audio_uuid}{file_extension}'
+        relative_audio_path = f'{audio_uuid.hex}{file_extension}'
         absolute_audio_path = os.path.join(self.media_path, relative_audio_path)
 
         with open(absolute_audio_path, 'wb') as file:
@@ -40,7 +40,6 @@ class FilesystemAudioManager(abstract.AudioManager):
             uuid=audio_uuid,
             user_id=user.id,
             user=user,
-            audio_filepath=relative_audio_path
         )
 
 
@@ -48,7 +47,8 @@ class FilesystemAudioManager(abstract.AudioManager):
         self,
         audio: audio_converter.modules.audio.domain.models.Audio,
     ) -> BinaryIO:
-        relative_audio_path = audio.audio_filepath
+        file_extension = f'.{self.file_extension}' or ''
+        relative_audio_path = f'{audio.uuid.hex}{file_extension}'
         absolute_audio_path = os.path.join(self.media_path, relative_audio_path)
         return open(absolute_audio_path, 'rb')
     

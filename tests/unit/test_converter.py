@@ -48,6 +48,6 @@ def test_audio_converter(
     # Asserting that audio set is not empty
     assert uow.audio.audio_set
 
-    mp3_full_path = os.path.join(media_path, mp3_audio.audio_filepath)
+    mp3_full_path = os.path.join(media_path, f'{mp3_audio.uuid.hex}.mp3')
     assert os.path.exists(mp3_full_path)
     os.remove(mp3_full_path)

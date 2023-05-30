@@ -9,4 +9,3 @@ class Audio:
     uuid: uuid.UUID
     user_id: int
     user: audio_converter.modules.user.domain.models.User
-    audio_filepath: str

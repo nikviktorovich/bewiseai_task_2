@@ -147,4 +147,3 @@ This table contains information about saved audio
 #### Fields
 - `uuid` - UUID, primary key
 - `user_id` - Integer, not null, foreign key
-- `audio_filepath` - Relative (to the media path) path to the saved audio file
